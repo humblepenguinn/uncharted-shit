@@ -35,7 +35,7 @@
 {% if messages %}
 
 {% for message in messages %}
-{% if "Error" not in message[1]: %}
+{% if "Error" not in message[1] and "Message" not in message[1] and "None" not in message[1]: %}
 <div class="alert alert-info alter-dismissable fade show">
 <strong>Success! </strong> {{ message[1] }}
 <button type="button" class="close" data-dismiss="alert">
@@ -46,7 +46,25 @@
 
 {% if "Error" in message[1]: %}
 <div class="alert alert-danger alter-dismissable fade show">
-<strong>Error: </strong> {{ message[1] }}
+<strong>Error: </strong> {{ message[1].replace('Error', '') }}
+<button type="button" class="close" data-dismiss="alert">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+{% endif %}
+
+{% if "Message" in message[1]: %}
+<div class="alert alert-info alter-dismissable fade show">
+<strong>Message: </strong> {{ message[1].replace('Message', '') }}
+<button type="button" class="close" data-dismiss="alert">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+{% endif %}
+
+{% if "None" in message[1]: %}
+<div class="alert alert-message alter-dismissable fade show">
+{{ message[1].replace('None', '') }}
 <button type="button" class="close" data-dismiss="alert">
 <span aria-hidden="true">&times;</span>
 </button>

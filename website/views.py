@@ -7,7 +7,6 @@ views = Blueprint('views', __name__)
 
 
 @views.route('/', methods=['GET', 'POST'])
-
 def home():
     if request.method == 'POST':
         session.pop('_flashes', None)
@@ -27,28 +26,38 @@ def home():
             f = open("website/locations-id.json")
             data = json.load(f)
 
-            location_to_be = 1 if not team.visited_paths else team.visited_paths.pop() + 1
-
-            if data[str(location_to_be)] == location_id:
-                f.close()
-
-                f = open("website/riddles.json")
-                data = json.load(f)
-
-                flash(f"Location To Be: {location_to_be}")
-                flash(f"Visited Paths: {team.visited_paths}")
-                flash(f"Riddle: {data[str(location_to_be)]['riddle']}")
-                f.close()
-
-
-                if team.visited_paths:
-                    team.visited_paths = team.visited_paths.append(location_to_be)
-                else:
-                    team.visited_paths = [location_to_be]
-                db.session.commit()
+            if location_id not in data.values():
+                flash("Error Invalid Location ID")
 
             else:
-                flash("Error: Nikal yahan se OR invalid location id plz recheck")
+                location_to_be = 1 if not team.visited_paths else int(
+                    team.path.split(',')[int(team.visited_paths.split(',').pop()) + 1]
+                )
+
+                flash(f"Message Location To Be: {location_to_be}")
+                flash(f"Message Visited Paths: {team.visited_paths}")
+                flash(f"Message Path: {team.path}")
+
+                if data[str(location_to_be)] == location_id:
+                    f.close()
+
+                    f = open("website/riddles.json")
+                    data = json.load(f)
+
+                    flash(f"None Riddle: {data[str(location_to_be)]['riddle']}")
+                    f.close()
+
+
+                    if team.visited_paths:
+                        team.visited_paths = team.visited_paths + f", {int(team.visited_paths.split(',').pop()) + 1}"
+                        db.session.commit()
+                    else:
+                        team.visited_paths = "0"
+                        db.session.commit()
+
+                else:
+                    flash("Error Nikal yahan se")
+
 
 
     return render_template("home.html")
