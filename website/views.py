@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, session
+import random
+
 from . import db
 from .models import Team
 import json
@@ -44,7 +46,7 @@ def home():
                     f = open("website/riddles.json")
                     data = json.load(f)
 
-                    flash(f"None Riddle: {data[str(location_to_be)]['riddle']}")
+                    flash(f"None Riddle: {random.choice(data[str(location_to_be)]['riddle'])}")
                     f.close()
 
 
