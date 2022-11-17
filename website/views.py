@@ -31,34 +31,60 @@ def home():
             if location_id not in data.values():
                 flash("Error Invalid Location ID")
 
+            print(len(team.visited_paths))
+            if location_id == 'DEFAULT' and team.visited_paths == '-1' :
+                z = open('website/riddles.json')
+                riddles = json.load(z)
+                riddle = random.choice(riddles[str(team.path.split(',')[0])]['riddles'])
+                #team.visited_paths = '-1'
+                #db.session.commit()
+                f.close()
+
+                flash(f"None Riddle: {riddle}")
+                #flash(f"Do not reload the page")
+
             else:
-                location_to_be = 1 if not team.visited_paths else int(
-                    team.path.split(',')[int(team.visited_paths.split(',').pop()) + 1]
-                )
+                if team.visited_paths:
+                    location_to_be = int(
+                        team.path.split(',')[int(team.visited_paths.split(',').pop()) + 1]
+                    )
 
-                flash(f"Message Location To Be: {location_to_be}")
-                flash(f"Message Visited Paths: {team.visited_paths}")
-                flash(f"Message Path: {team.path}")
+                    #flash(f"Message Location To Be: {location_to_be}")
+                    #flash(f"Message Visited Paths: {team.visited_paths}")
+                    flash(f"Message Path: {team.path}")
 
-                if data[str(location_to_be)] == location_id:
-                    f.close()
+                    if data[str(location_to_be)] == location_id:
+                        f.close()
 
-                    f = open("website/riddles.json")
-                    data = json.load(f)
+                        f = open("website/riddles.json")
+                        data = json.load(f)
+                        nextLocIndex = team.path.split(',')[int(team.visited_paths.split(',').pop()) + 2]
+                        riddle = random.choice(data[str(nextLocIndex)]['riddles'])
+                        # if location_to_be == -1:
+                        #     riddle = random.choice(data[team.path.split(',')[0]]['riddles'])
+                        # else:
+                        #     riddle = random.choice(data[str(location_to_be)]['riddles'])
+                        flash(f"None Riddle: {riddle}")
+                        f.close()
 
-                    flash(f"None Riddle: {random.choice(data[str(location_to_be)]['riddle'])}")
-                    f.close()
 
+                        if team.visited_paths:
+                            team.visited_paths = team.visited_paths + f", {int(team.visited_paths.split(',').pop()) + 1}"
+                            db.session.commit()
+                        else:
+                            team.visited_paths = "0"
+                            db.session.commit()
 
-                    if team.visited_paths:
-                        team.visited_paths = team.visited_paths + f", {int(team.visited_paths.split(',').pop()) + 1}"
-                        db.session.commit()
                     else:
-                        team.visited_paths = "0"
-                        db.session.commit()
+                        flash("Error Nikal yahan se")
+                        f = open("website/riddles.json")
+                        data = json.load(f)
+                        riddle = random.choice(
+                            data[team.path.split(',')[int(team.visited_paths.split(',').pop()) + 1]]['riddles']
+                        )
+                        flash(f'None Riddle: {riddle}')
+                        f.close()
 
-                else:
-                    flash("Error Nikal yahan se")
 
 
 

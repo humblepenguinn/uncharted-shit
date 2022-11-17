@@ -13,7 +13,7 @@ def add_teams():
     for i in df['HC ID'].to_list():
         random_path = generate_random_path()
 
-        db.session.add(Team(id=i, path=random_path, visited_paths=""))
+        db.session.add(Team(id=i, path=random_path, visited_paths="-1"))
         db.session.commit()
 
         data[i] = {"path": random_path}
